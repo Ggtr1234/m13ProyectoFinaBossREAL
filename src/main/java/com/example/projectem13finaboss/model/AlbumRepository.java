@@ -15,13 +15,9 @@ public class AlbumRepository {
         Statement stmt2 = null;
         List<Album> albums = new ArrayList<>();
         try {
-            //Crear una consulta / query amb un object Statement
             stmt = con.createStatement();
             stmt2 = con.createStatement();
-            //Executar la consulta
             ResultSet rs = stmt.executeQuery("SELECT * FROM Album;");
-
-            //Procesar el resultat amb l’objecte ResultSet
             while (rs.next()) {
                 int albumId = rs.getInt("AlbumId");
                 String title = rs.getString("Title");
@@ -36,8 +32,7 @@ public class AlbumRepository {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        System.out.println("Operation done successfully");
-        System.out.println(albums);
+        System.out.println("Albums cargados: " + albums.size());
         return albums;
 
     }
