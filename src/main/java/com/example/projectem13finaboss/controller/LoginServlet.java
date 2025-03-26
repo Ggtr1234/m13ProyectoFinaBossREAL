@@ -3,10 +3,7 @@ package com.example.projectem13finaboss.controller;
 import com.example.projectem13finaboss.model.UsersRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,6 +16,10 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         UsersRepository usersRepository = new UsersRepository();
         if (usersRepository.verifyUser(username, password)) {
+            Cookie token = new Cookie( "token", usersRepository.getToken(username));
+            token.setMaxAge(60 * 60 * 24);
+            token.setPath("/");
+            response.addCookie(token);
             HttpSession session = request.getSession();
             session.setAttribute("user", username);
             response.sendRedirect("loggedUser"); // Redirige a la URL '/loggedUser'
