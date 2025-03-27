@@ -110,6 +110,7 @@
     <div class="button-container">
         <a href="../albumlists" class="btn btn-albums">Ver Álbumes</a>
         <a href="../artistlist" class="btn btn-artists">Ver Artistas</a>
+        <a href="../favouritesAlbum" class="btn btn-artists">Ver favoritos</a>
     </div>
 </div>
 </body>

@@ -16,12 +16,13 @@ public class LoggedUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        Cookie[] cookies = request.getCookies();
-        log.info(cookies.toString());
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect("/login");
             return;
         }
+        Cookie[] cookies = request.getCookies();
+        log.info(cookies.toString());
+
         response.sendRedirect("jsp/loggedUser.jsp");
     }
 

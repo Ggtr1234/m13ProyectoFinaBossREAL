@@ -14,7 +14,6 @@ public class Conexio {
             initContext = new InitialContext();
             Context envContext = (Context) initContext.lookup("java:/comp/env");
             DataSource dataSource = (DataSource) envContext.lookup("jdbc/music");
-
             Connection conn = dataSource.getConnection();
             return conn;
         } catch (NamingException | SQLException e) {
