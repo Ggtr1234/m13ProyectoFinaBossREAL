@@ -76,28 +76,47 @@
 </head>
 <body>
     <div class="container">
-        <h2>Lista de Favoritos</h2>
+        <h2><c:out value="${labels['titolfavoritos']}"/></h2>
         <c:forEach var="albums" items="${albums}">
             <table>
                 <tr>
                     <td><h3>${albums.title}</h3></td>
                     <td><h4>${albums.artist.name}</h4></td>
-                    <td><button class="delete-btn">Eliminar</button></td>
+                    <td><button class="delete-btn" onclick="deleteFavorite(${albums.albumId})">Eliminar</button></td>
+                    <td><a href="DeleteFavoriteServlet?albumId=${albums.albumId}&userId=${sessionScope.userId}">Eliminar</a></td>
                 </tr>
             </table>
         </c:forEach>
     </div>
-    <div class="container">
-        <h2>Lista de Productos</h2>
-        <c:forEach var="artists" items="${artists}">
-            <table>
-                <tr>
-                    <td><h3>${artists.name}</h3></td>
-                    <td><h4>${artists.artistId}</h4></td>
-                    <td><button class="delete-btn">Eliminar</button></td>
-                </tr>
-            </table>
-        </c:forEach>
-    </div>
+<%--    <div class="container">--%>
+<%--        <h2>Lista de Productos</h2>--%>
+<%--        <c:forEach var="artists" items="${artists}">--%>
+<%--            <table>--%>
+<%--                <tr>--%>
+<%--                    <td><h3>${artists.name}</h3></td>--%>
+<%--                    <td><h4>${artists.artistId}</h4></td>--%>
+<%--                    <td><button class="delete-btn" >Eliminar</button></td>--%>
+<%--                </tr>--%>
+<%--            </table>--%>
+<%--        </c:forEach>--%>
+<%--    </div>--%>
+
+    <script>
+        const userId = ${sessionScope.userId}; // Evalúa en servidor, visible en cliente
+
+        function deleteFavorite(albumID) {
+            if (confirm("¿Estás seguro de que quieres eliminar este álbum de favoritos?")) {
+                fetch(`DeleteFavoriteServlet?albumId=` + albumID + `&userId=${userId}`, {
+                    method: 'GET'
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert(response.url);
+                    }
+                }).catch(error => console.error("Error:", error));
+            }
+        }
+    </script>
 </body>
 </html>

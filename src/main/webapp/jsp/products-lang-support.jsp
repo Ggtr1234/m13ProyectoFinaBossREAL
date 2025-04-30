@@ -27,8 +27,8 @@
 <br>
 <br>
 <form action="products-lang-support" method="post">
-    <label for="language">Selecciona idioma:</label>
-    <select name="lang" id="language" onchange="this.form.submit()">
+    <label for="lang">Selecciona idioma:</label>
+    <select name="lang" id="lang" onchange="this.form.submit()">
         <option value="ca">Català</option>
         <option value="es">Español</option>
         <option value="en">English</option>

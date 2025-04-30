@@ -67,5 +67,44 @@ public class AlbumRepository {
         return albums;
     }
 
+    public void addFavoriteAlbum(Album album, User user){
+        Connection con = Conexio.getConnection();
+        PreparedStatement pstmt = null;
+        try {
+            String sql = "INSERT INTO Favourites (user_id, favourite_album) VALUES (?, ?)";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, user.getId());
+            pstmt.setInt(2, album.getAlbumId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al añadir álbum a favoritos: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void deleteFavoriteAlbum(Album album, User user) {
+        Connection con = Conexio.getConnection();
+        PreparedStatement pstmt = null;
+        try {
+            String sql = "DELETE FROM Favourites WHERE user_id = ? AND favourite_album = ?";
+            pstmt = con.prepareStatement(sql);
+            pstmt.setInt(1, user.getId());
+            pstmt.setInt(2, album.getAlbumId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

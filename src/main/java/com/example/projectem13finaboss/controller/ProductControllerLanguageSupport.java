@@ -18,9 +18,10 @@ import java.util.ResourceBundle;
 public class ProductControllerLanguageSupport extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        String lang = (String) request.getAttribute("lang");
+        String lang = request.getParameter("lang");
         if (lang == null) {
             lang = "en"; // Idioma per defecte
+            System.out.println("Es null");
             session.setAttribute("lang", lang);
         }else {
             session.setAttribute("lang", lang);
@@ -35,5 +36,10 @@ public class ProductControllerLanguageSupport extends HttpServlet {
         request.setAttribute("products", products);
 
         request.getRequestDispatcher("jsp/products-lang-support.jsp").forward(request, response);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
     }
 }

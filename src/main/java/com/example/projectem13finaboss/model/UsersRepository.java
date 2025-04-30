@@ -1,9 +1,6 @@
 package com.example.projectem13finaboss.model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,5 +53,21 @@ public class UsersRepository {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public int getUserIdByToken(String token) {
+        Connection con = Conexio.getConnection();
+        String query = "SELECT user_id FROM Users WHERE user_token = ?";
+
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+            stmt.setString(1, token);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("user_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }
