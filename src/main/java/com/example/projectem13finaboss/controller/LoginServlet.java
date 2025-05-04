@@ -19,16 +19,32 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         UsersRepository usersRepository = new UsersRepository();
+
         if (usersRepository.verifyUser(username, password)) {
-            Cookie token = new Cookie( "token", usersRepository.getToken(username));
+            String tokenValue = usersRepository.getToken(username);
+            int userId = usersRepository.getUserIdByToken(tokenValue);
+            String preferredLang = usersRepository.getPreferedLanguage(userId); // ← Obtener idioma de la BD
+            System.out.println(username + " " + preferredLang);
+            // Crear cookie con el idioma
+            Cookie langCookie = new Cookie("lang", preferredLang);
+            langCookie.setMaxAge(60 * 60 * 24 );
+            langCookie.setPath("/");
+            response.addCookie(langCookie);
+
+            // Crear cookie con token
+            Cookie token = new Cookie("token", tokenValue);
             token.setMaxAge(60 * 60 * 24);
             token.setPath("/");
             response.addCookie(token);
+
+            // Guardar en sesión
             HttpSession session = request.getSession();
             session.setAttribute("user", username);
-            session.setAttribute("userId", usersRepository.getUserIdByToken(usersRepository.getToken(username)));
-            ;
+            session.setAttribute("userId", userId);
+            session.setAttribute("lang", preferredLang); // ← Guardar idioma en sesión
+
             log.info("Atributes: " + session.getAttributeNames().toString());
+
             response.sendRedirect("loggedUser"); // Redirige a la URL '/loggedUser'
         } else {
             response.setContentType("text/html");

@@ -1,109 +1,107 @@
 package com.example.projectem13finaboss.model;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumRepository {
 
-    public List<Album> getAllAlbums(){
-        Connection con = Conexio.getConnection();
-        Statement stmt = null;
-        Statement stmt2 = null;
+    public List<Album> getAllAlbums() {
         List<Album> albums = new ArrayList<>();
-        try {
-            stmt = con.createStatement();
-            stmt2 = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Album;");
-            while (rs.next()) {
-                int albumId = rs.getInt("AlbumId");
-                String title = rs.getString("Title");
-                int artistId = rs.getInt("ArtistId");
-                ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Artist WHERE ArtistId = " + artistId);
-                rs2.next();
-                String nomArtist = rs2.getString("Name");
-                albums.add(new Album(albumId, new Artist(artistId,nomArtist), title));
-            }
-            rs.close();
-            stmt.close();
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        System.out.println("Albums cargados: " + albums.size());
-        return albums;
+        String sql = "SELECT a.AlbumId, a.Title, ar.ArtistId, ar.Name " +
+                "FROM Album a JOIN Artist ar ON a.ArtistId = ar.ArtistId";
 
-    }
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
-    public List<Album> getAlbumsFavourites(){
-        Connection con = Conexio.getConnection();
-        Statement stmt = null;
-        Statement stmt3 = null;
-        Statement stmt2 = null;
-        List<Album> albums = new ArrayList<>();
-        try{
-            stmt = con.createStatement();
-            String sql = "SELECT a.AlbumId, a.Title, a.ArtistId, ar.Name " +
-                    "FROM Album a " +
-                    "JOIN Favourites f ON a.AlbumId = f.favourite_album " +
-                    "JOIN Artist ar ON a.ArtistId = ar.ArtistId";
-
-            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 int albumId = rs.getInt("AlbumId");
                 String title = rs.getString("Title");
                 int artistId = rs.getInt("ArtistId");
                 String artistName = rs.getString("Name");
+
                 Artist artist = new Artist(artistId, artistName);
                 albums.add(new Album(albumId, artist, title));
             }
-            rs.close();
-            stmt.close();
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error al cargar álbumes: " + e.getMessage());
         }
+
+        System.out.println("Álbumes cargados: " + albums.size());
         return albums;
     }
 
-    public void addFavoriteAlbum(Album album, User user){
-        Connection con = Conexio.getConnection();
-        PreparedStatement pstmt = null;
-        try {
-            String sql = "INSERT INTO Favourites (user_id, favourite_album) VALUES (?, ?)";
-            pstmt = con.prepareStatement(sql);
-            pstmt.setInt(1, user.getId());
+    public List<Album> getAlbumsFavourites() {
+        List<Album> albums = new ArrayList<>();
+        String sql = "SELECT a.AlbumId, a.Title, ar.ArtistId, ar.Name " +
+                "FROM Album a " +
+                "JOIN Favourites f ON a.AlbumId = f.favourite_album " +
+                "JOIN Artist ar ON a.ArtistId = ar.ArtistId";
+
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                int albumId = rs.getInt("AlbumId");
+                String title = rs.getString("Title");
+                int artistId = rs.getInt("ArtistId");
+                String artistName = rs.getString("Name");
+
+                Artist artist = new Artist(artistId, artistName);
+                albums.add(new Album(albumId, artist, title));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener favoritos: " + e.getMessage());
+        }
+
+        return albums;
+    }
+
+    public void addFavoriteAlbum(Album album, int userId) {
+        String sql = "INSERT INTO Favourites (user_id, favourite_album) VALUES (?, ?)";
+
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
             pstmt.setInt(2, album.getAlbumId());
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al añadir álbum a favoritos: " + e.getMessage(), e);
-        } finally {
-            try {
-                if (pstmt != null) pstmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     public void deleteFavoriteAlbum(Album album, User user) {
-        Connection con = Conexio.getConnection();
-        PreparedStatement pstmt = null;
-        try {
-            String sql = "DELETE FROM Favourites WHERE user_id = ? AND favourite_album = ?";
-            pstmt = con.prepareStatement(sql);
+        String sql = "DELETE FROM Favourites WHERE user_id = ? AND favourite_album = ?";
+
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
             pstmt.setInt(1, user.getId());
             pstmt.setInt(2, album.getAlbumId());
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (pstmt != null) pstmt.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            System.err.println("Error al eliminar favorito: " + e.getMessage());
+        }
+    }
+
+    public void deleteAlbum(Album album) {
+        String sql = "DELETE FROM Album WHERE AlbumId = ?";
+
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setInt(1, album.getAlbumId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar álbum: " + e.getMessage());
         }
     }
 

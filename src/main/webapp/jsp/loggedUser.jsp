@@ -1,10 +1,10 @@
-
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Music App - Inicio</title>
+    <title>Music App - <c:out value="${labels['title']}"/></title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -80,6 +80,11 @@
             color: white;
         }
 
+        .btn-logout {
+            background-color: #FF5733; /* Color para el botón de logout */
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -93,6 +98,10 @@
             background-color: #e68a00;
         }
 
+        .btn-logout:hover {
+            background-color: #cc4e2d; /* Color hover para el logout */
+        }
+
         .app-title {
             color: var(--primary-color);
             margin-bottom: 10px;
@@ -102,16 +111,32 @@
 <body>
 <div class="container">
     <h1 class="app-title">Music App</h1>
+    <form action="loggedUser" method="get">
+        <label for="lang"><c:out value="${labels['label.language']}"/>:</label>
+        <select name="lang" id="lang" onchange="this.form.submit()">
+            <option value="ca" ${lang == 'ca' ? 'selected' : ''}>Català</option>
+            <option value="es" ${lang == 'es' ? 'selected' : ''}>Español</option>
+            <option value="en" ${lang == 'en' ? 'selected' : ''}>English</option>
+        </select>
+    </form>
     <div class="welcome-message">
-        <h2>Bienvenido, <span class="user-name"><%= session.getAttribute("user") %></span></h2>
-        <p>¿Qué te gustaría explorar hoy?</p>
+        <h2><c:out value="${labels['welcome']}"/>, <span class="user-name"><%= session.getAttribute("user") %></span></h2>
+        <p><c:out value="${labels['question']}"/></p>
     </div>
 
     <div class="button-container">
-        <a href="../albumlists" class="btn btn-albums">Ver Álbumes</a>
-        <a href="../artistlist" class="btn btn-artists">Ver Artistas</a>
-        <a href="../favouritesAlbum" class="btn btn-artists">Ver favoritos</a>
+        <a href="albumlists?lang=${param.lang}" class="btn btn-albums"><c:out value="${labels['view.albums']}"/></a>
+        <a href="artistlist?lang=${param.lang}" class="btn btn-artists"><c:out value="${labels['view.artists']}"/></a>
+        <a href="favouritesAlbum?lang=${param.lang}" class="btn btn-artists"><c:out value="${labels['view.favourites']}"/></a>
     </div>
+
+    <!-- Botón de Logout -->
+    <div class="button-container">
+        <a href="logout" class="btn btn-logout"><c:out value="${labels['logout']}"/></a>
+    </div>
+
+    <br><br>
+
 </div>
 </body>
 </html>

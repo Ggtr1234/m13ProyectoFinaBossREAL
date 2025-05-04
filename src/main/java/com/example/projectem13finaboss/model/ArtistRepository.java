@@ -1,31 +1,44 @@
 package com.example.projectem13finaboss.model;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistRepository {
+
     public List<Artist> getAllArtists() {
-        Connection con = Conexio.getConnection();
-        Statement stmt = null;
         List<Artist> artists = new ArrayList<>();
-        try {
-            stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Artist;");
+        String sql = "SELECT * FROM Artist";
+
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
             while (rs.next()) {
                 int artistId = rs.getInt("ArtistId");
                 String name = rs.getString("Name");
                 artists.add(new Artist(artistId, name));
             }
-            rs.close();
-            stmt.close();
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener artistas: " + e.getMessage());
         }
+
         System.out.println("Artistas cargados: " + artists.size());
         return artists;
+    }
 
+    public void deleteArtist(Artist artist) {
+        String sql = "DELETE FROM Artist WHERE ArtistId = ?";
+
+        try (Connection con = Conexio.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setInt(1, artist.getId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar artista: " + e.getMessage());
+        }
     }
 }

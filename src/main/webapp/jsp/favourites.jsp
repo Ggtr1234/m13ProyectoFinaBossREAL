@@ -77,29 +77,26 @@
 <body>
     <div class="container">
         <h2><c:out value="${labels['titolfavoritos']}"/></h2>
+        <form action="favourites-lang-support" method="post">
+            <label for="lang"><c:out value="${labels['label.language']}"/></label>
+            <select name="lang" id="lang" onchange="this.form.submit()">
+                <option value="en" <c:if test="${sessionScope.lang == 'en'}">selected</c:if>>English</option>
+                <option value="es" <c:if test="${sessionScope.lang == 'es'}">selected</c:if>>Español</option>
+                <option value="ca" <c:if test="${sessionScope.lang == 'ca'}">selected</c:if>>Català</option>
+
+            </select>
+        </form>
+        <a href="loggedUser"><c:out value="${labels['back.home']}"/></a>
         <c:forEach var="albums" items="${albums}">
             <table>
                 <tr>
                     <td><h3>${albums.title}</h3></td>
                     <td><h4>${albums.artist.name}</h4></td>
                     <td><button class="delete-btn" onclick="deleteFavorite(${albums.albumId})">Eliminar</button></td>
-                    <td><a href="DeleteFavoriteServlet?albumId=${albums.albumId}&userId=${sessionScope.userId}">Eliminar</a></td>
                 </tr>
             </table>
         </c:forEach>
     </div>
-<%--    <div class="container">--%>
-<%--        <h2>Lista de Productos</h2>--%>
-<%--        <c:forEach var="artists" items="${artists}">--%>
-<%--            <table>--%>
-<%--                <tr>--%>
-<%--                    <td><h3>${artists.name}</h3></td>--%>
-<%--                    <td><h4>${artists.artistId}</h4></td>--%>
-<%--                    <td><button class="delete-btn" >Eliminar</button></td>--%>
-<%--                </tr>--%>
-<%--            </table>--%>
-<%--        </c:forEach>--%>
-<%--    </div>--%>
 
     <script>
         const userId = ${sessionScope.userId}; // Evalúa en servidor, visible en cliente

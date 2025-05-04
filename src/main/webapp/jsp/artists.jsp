@@ -1,15 +1,8 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: llere
-  Date: 25/03/2025
-  Time: 22:59
-  To change this template use File | Settings | File Templates.
---%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Artists</title>
+    <title><c:out value="${labels['title']}"/></title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,30 +29,30 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            table-layout: fixed; /* Añadido para controlar el ancho de las columnas */
+            table-layout: fixed;
         }
         td {
             padding: 10px;
             border-bottom: 1px solid #ddd;
-            vertical-align: middle; /* Alinea verticalmente el contenido */
+            vertical-align: middle;
         }
         td:nth-child(1) {
-            width: 65%; /* Ancho para la columna del título */
+            width: 65%;
         }
         td:nth-child(2) {
-            width: 20%; /* Ancho fijo para la columna del artista */
-            padding-left: 20px; /* Espaciado consistente */
+            width: 20%;
+            padding-left: 20px;
         }
         td:nth-child(3) {
-            width: 15%; /* Ancho para la columna del botón */
+            width: 15%;
             text-align: right;
         }
-        h3, h4 {
+        h2, h3, h4 {
             margin: 0;
             color: #333;
         }
         h4 {
-            font-weight: normal; /* Opcional: para diferenciar del título */
+            font-weight: normal;
         }
         .delete-btn {
             background-color: #ff4d4d;
@@ -76,17 +69,31 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Lista de Artistas</h2>
-        <c:forEach var="artists" items="${artists}">
-            <table>
-                <tr>
-                    <td><h3>${artists.name}</h3></td>
-                    <td><h4>${artists.id}</h4></td>
-                    <td><button class="delete-btn">Eliminar</button></td>
-                </tr>
-            </table>
-        </c:forEach>
-    </div>
+<div class="container">
+    <h2><c:out value="${labels['header.artists']}"/></h2>
+    <form action="artists-lang-support" method="post">
+        <label for="lang"><c:out value="${labels['label.language']}"/>:</label>
+        <select name="lang" id="lang" onchange="this.form.submit()">
+            <option value="ca" <c:if test="${sessionScope.lang == 'ca'}">selected</c:if>>Català</option>
+            <option value="es" <c:if test="${sessionScope.lang == 'es'}">selected</c:if>>Español</option>
+            <option value="en" <c:if test="${sessionScope.lang == 'en'}">selected</c:if>>English</option>
+        </select>
+    </form>
+    <a href="loggedUser"><c:out value="${labels['link.back']}"/></a>
+
+    <c:forEach var="artists" items="${artists}">
+        <table>
+            <tr>
+                <td><h3><c:out value="${artists.name}"/></h3></td>
+                <td><h4><c:out value="${artists.id}"/></h4></td>
+                <td><a href="deleteartist?ArtistId=${artists.id}" class="delete-btn">
+                    <c:out value="${labels['button.delete']}"/></a></td>
+            </tr>
+        </table>
+    </c:forEach>
+
+    <br><br>
+
+</div>
 </body>
 </html>

@@ -5,7 +5,7 @@
   Time: 18:59
   To change this template use File | Settings | File Templates.
 --%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -73,22 +73,56 @@
         .delete-btn:hover {
             background-color: #cc0000;
         }
+        .favorite-btn {
+            background-color: #afa24c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+        .favorite-btn:hover {
+            background-color: #8e8738;
+        }
     </style>
 </head>
 <body>
-    <h1>AlbumList</h1>
+<h1><c:out value="${labels['page.title']}"/></h1>
 
-    <div class="container">
-        <h2>Lista de Productos</h2>
-        <c:forEach var="albums" items="${albums}">
-            <table>
-                <tr>
-                    <td><h3>${albums.title}</h3></td>
-                    <td><h4>${albums.artist.name}</h4></td>
-                    <td><button class="delete-btn">Eliminar</button></td>
-                </tr>
-            </table>
-        </c:forEach>
-    </div>
+<div class="container">
+    <h2><c:out value="${labels['product.list']}"/></h2>
+    <form action="albums-lang-support" method="post">
+        <label for="lang"><c:out value="${labels['label.language']}"/></label>
+        <select name="lang" id="lang" onchange="this.form.submit()">
+            <option value="en" <c:if test="${sessionScope.lang == 'en'}">selected</c:if>>English</option>
+            <option value="es" <c:if test="${sessionScope.lang == 'es'}">selected</c:if>>Español</option>
+            <option value="ca" <c:if test="${sessionScope.lang == 'ca'}">selected</c:if>>Català</option>
+
+        </select>
+    </form>
+    <a href="loggedUser"><c:out value="${labels['back.home']}"/></a>
+    <c:forEach var="albums" items="${albums}">
+        <table>
+            <tr>
+                <td><h3><c:out value="${albums.title}"/></h3></td>
+                <td><h4><c:out value="${albums.artist.name}"/></h4></td>
+                <td>
+                    <a href="addFavoriteAlbum?albumId=${albums.albumId}" class="favorite-btn">
+                    <c:out value="${labels['button.favorite']}"/>
+                    </a>
+                    <a href="deletealbum?albumId=${albums.albumId}" class="delete-btn">
+                        <c:out value="${labels['button.delete']}"/>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </c:forEach>
+</div>
+
+<br><br>
+
 </body>
 </html>
